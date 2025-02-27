@@ -1,13 +1,20 @@
-import './App.css';
-import Home from './pages/Home';
-import { ItemProvider } from './context/ItemContext';
+import "./App.css";
+import Home from "./pages/Home";
+import { ItemProvider } from "./context/ItemContext";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <div className="App">
       <ItemProvider>
-       <Home />
-       </ItemProvider>
+        <Home />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar
+          theme="colored"
+        />
+      </ItemProvider>
     </div>
   );
 }

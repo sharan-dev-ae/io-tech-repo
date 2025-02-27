@@ -18,7 +18,10 @@ const Home: React.FC = () => {
       } catch (error: any) {
         setError(error.message);  
       } finally {
-        setLoading(false);
+        setTimeout(()=>{
+          setLoading(false);
+        },1000)
+     
       }
     };
 
@@ -26,11 +29,9 @@ const Home: React.FC = () => {
   }, [setItems, setLoading, setError]);
 
   return (
-    <div>
+    <div style={{backgroundImage:'../ass'}} >
       <h1 className="text-center text-2xl font-semibold">Item Management</h1>
-      {loading ? (
-        <div className="text-center">Loading...</div>
-      ) : error ? (
+      { error ? (
         <FallbackUI />  
       ) : (
         <div>

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { ItemContext } from "../context/ItemContext";
+import toastService from "../utils/toastService";
 
 type Item = {
   id: number;
@@ -13,10 +14,19 @@ const ItemForm: React.FC = () => {
     title: "",
     body: "",
   });
-  const { items, setItems } = useContext(ItemContext);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { items, setItems, loading } = useContext(ItemContext);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
+    
+    if (value.length > 100) {
+      toastService.error(`Maximum length exceeded for ${name === "title" ? "Title" : "Description"}.`);
+      return;
+    }
+  
     setFormData({
       ...formData,
       [name]: value,
@@ -26,22 +36,33 @@ const ItemForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const trimmedTitle = formData.title.trim();
+    const trimmedBody = formData.body.trim();
+
+    if (!trimmedTitle || !trimmedBody) {
+      toastService.error("Title and Description are required.");
+      return;
+    }
+
     const newItem: Item = {
-      id: items.length + 1, 
-      title: formData.title,
-      body: formData.body,
+      id: Date.now(),
+      title: trimmedTitle,
+      body: trimmedBody,
     };
 
-    // Update the items array in the context
-    setItems([...items, newItem]);
+    setItems([newItem, ...items]); 
+    toastService.success("Item added successfully");
 
-    // Reset form fields
     setFormData({ id: 0, title: "", body: "" });
   };
 
+  if (loading) return null; // Don't render the form until loading is complete
+
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4 text-center">Add a New Item</h2>
+    <div className="max-w-6xl mx-auto p-3 bg-white rounded-lg shadow-lg border border-gray-300">
+      <h2 className="text-2xl font-semibold mb-4 text-center">
+        Add a New Item
+      </h2>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0 items-center"
@@ -60,31 +81,30 @@ const ItemForm: React.FC = () => {
             value={formData.title}
             onChange={handleInputChange}
             placeholder="Enter title"
-            required
+            maxLength={100}
             className="w-full sm:w-64 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:w-full space-y-2 sm:space-y-0">
           <label
-            htmlFor="description"
+            htmlFor="body"
             className="block text-sm font-medium text-gray-700 sm:mr-4"
           >
             Description
           </label>
-          <input
-            type="text"
+          <textarea
             name="body"
-            id="description"
+            id="body"
             value={formData.body}
             onChange={handleInputChange}
             placeholder="Enter description"
-            required
+            maxLength={100}
+            rows={3}
             className="w-full sm:w-[400px] p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
 
-        {/* Submit Button */}
         <div className="flex flex-col sm:flex-row sm:items-center w-full sm:w-auto">
           <button
             type="submit"
