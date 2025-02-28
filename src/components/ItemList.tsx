@@ -33,6 +33,10 @@ const ItemList: React.FC = () => {
     setSelectedItem(null);
     setIsEditing(false);
   };
+  const handleRemoveItem = (id:number) => {
+    removeItem(id); 
+    toastService.success("Item removed successfully!"); 
+  };
 
   const handleSaveEdit = () => {
     if (!selectedItem) return;
@@ -134,7 +138,7 @@ const ItemList: React.FC = () => {
               >
                 <div className="flex justify-end">
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => handleRemoveItem(item.id)}
                     className="text-gray-500 text-lg font-semibold cursor-pointer hover:text-red-500 transition-all"
                   >
                     ✕
