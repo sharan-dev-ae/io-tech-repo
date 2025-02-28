@@ -35,7 +35,7 @@ const Home: React.FC = () => {
         <FallbackUI />  
       ) : (
         <div>
-          {items.length === 0 ? (
+          {!loading && items.length === 0 ? (
             <div className="text-center">
               <p>No items found. Add a new item below.</p>
               <ItemForm />
